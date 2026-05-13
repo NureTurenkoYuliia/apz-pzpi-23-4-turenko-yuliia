@@ -1,0 +1,266 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+
+
+
+
+
+
+
+
+ЗВІТ
+з дисципліни «Архітектура програмного забезпечення» 
+до лабораторної роботи №3
+на тему: «Web застосунок»
+
+
+
+
+
+
+
+Виконала:	Перевірив:
+ст. гр. ПЗПІ-23-4	старший викладач каф. ПІ
+Туренко Ю.С.	Сокорчук І.П.
+
+
+
+
+
+
+
+
+
+
+
+ХАРКІВ 2026
+
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень124.040.1Створено розділ «Завдання»212.050.2Створено розділи «Опис виконаної роботи» 313.050.3Додано матеріали у Додатки і написаний висновок
+2 ЗАВДАННЯ
+     Необхідно розробити front-end частину програмної системи. Ця частина системи повинна підтримувати роботу клієнтів у веб-режимі та забезпечувати адміністрування системи, тобто мати окремий інтерфейс для звичайних користувачів і окремий – для адміністраторів (відповідно до ролей користувачів вашої системи). Користувацький інтерфейс та інтерфейс адміністрування повинні підтримувати інтернаціоналізацію та локалізацію, а саме, забезпечувати: підтримку української на англійської мов сайту, формат дати та часу відповідний регіону, порядок сортування текстових значень, різні напрями введення тексту тощо. Адміністрування системи повинно забезпечувати: управління користувачами системи, управління даними системи, створення резервних копій налаштувань та даних, експорт та імпорт даних та налаштувань.
+     
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     Проект розроблений на базі бібліотеки React з використанням TypeScript.
+     Веб-частина системи побудована за принципом розподілу інтерфейсів відповідно до ролей користувачів, що забезпечує безпеку та зручність взаємодії. Проект побудований за принципом розділення відповідальності – структура організована таким чином, щоб чітко відмежовувати логіку даних від візуального представлення. Реалізовано три рівні доступу:
+* інтерфейс користувача: зосереджений на управлінні акваріумами, пристроями і так далі та персоналізації налаштувань;
+* інтерфейс адміністратора: надає повний контроль над системними параметрами, безпекою та управлінням користувачами;
+* інтерфейс модератора: середовище для моніторингу системи.
+     Отже функціонування розробленої системи базується на чіткому розмежуванні прав доступу та ієрархічній структурі взаємодії між користувачем і серверною частиною. Процес розпочинається з етапу автентифікації, де система перевіряє валідність токена доступу та визначає роль користувача. Для детального представлення всіх можливих сценаріїв використання системи залежно від повноважень суб'єкта було розроблено діаграму прецедентів (рис. Б.1), яка відображає основні функціональні межі системи. Структурна організація модулів проєкту, їх взаємозв'язок із Layout-компонентами та інтеграція із зовнішнім API-сервісом наочно продемонстрована на діаграмі компонентів (рис. Б.2). 
+     Доступ до інтерфейсів регулюється за допомогою Token-based authentication. Після перевірки система автоматично перенаправляє користувача на відповідну його ролі сторінку (код В.1). Також у проекті реалізована ієрархічна модель маршрутизації за допомогою бібліотеки React Router (код. В.2). Є захищені маршрути, які доступні лише після аутентифікації та перевірки прав доступу. Для цього використовується компонент-обгортка ProtectedRoute, що виконує переірку авторизації та перевірку прав.
+     Особлива увага в проекті приділена динаміці зміни станів додатка залежно від статусу авторизації. Оскільки безпека та коректність перенаправлень є критичними, логіка роботи захищених маршрутів (Protected Routes) та механізм Role Redirect потребували окремої візуалізації. Для цього було створено діаграму станів (рис. Б.3), яка описує переходи між етапами перевірки токена та авторизації.
+     Для забезпечення цілісності даних та зручності користувачів реалізовано експорт та імпорт – звичайні користувачі мають можливість експортувати дані своїх акваріумів та імпортувати деякі налаштування. Цей процес включає взаємодію з файловою системою клієнта, валідацію отриманих даних на стороні сервера та обробку можливих помилок з виведенням сповіщень користувачеві. Послідовність цих кроків, алгоритм прийняття рішень та логіка зворотного зв’язку системи описані в діаграмі діяльності (рис. Б.4), що дозволяє простежити повний шлях даних від моменту ініціації дії користувачем до фінального оновлення стану бази даних.
+     Реалізовано перемикання між українською та англійською мовами. Всі текстові переклади винесені в окремі JSON-файли локалізації.
+     У ході виконання роботи було використано інструмент штучного інтелекту. Назва інструменту та версія: Claude 3.5 Sonnet.
+     Перший запит до ШІ був зроблений для побудови логіки авторизації та розмежування прав доступу в React-додатку (запит В.3). Мета: створення механізму перевірки JWT-токена та автоматичного редиректу користувача на відповідну «домашню сторінку» залежно від його ролі після входу в систему. Внесок автора: запропонована логіка була інтегрована в AuthContext, адаптована під типи TypeScript проекту, отриманий код був перевірений і доповнений функціоналом очищення застарілих токенів при виникненні помилок доступу.
+     Під час розробки структури сторінок був зроблений запит до ШІ для правильної реалізації вкладеної навігації (запит В.4). Мета: налаштування коректної ієрархії маршрутів у BrowserRouter, що дозволяє відображати деталізовану інформацію про пристрої в межах конкретного акваріума без втрати контексту. Внесок автора: виправлено помилки у шляхах, налаштовано коректні параметри в посиланнях Link для запобігання хибним редиректам.
+     Також був зроблений запит до ШІ запит до ШІ для реалізації структури інтерфейсу адміністрування (запит В.5). Мета: створення візуального скелета (Layout) для сторінок адміністратора та модератора, який забезпечує незмінність бокової панелі навігації при зміні контенту в основній зоні. Внесок автора: отриманий компонент був стилізований згідно з дизайном проекту.
+4 ВИСНОВОК
+     У результаті виконання лабораторної роботи було розроблено web застосунок з функціями адміністрування, перенаправленням за роллю та іншими можливостями системи, як авторизація, робота з даними, експорт та імпорт.
+     
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/r8iwGgl3ecQ 
+Хронологічний опис відеозапису:
+00:00 – Вступ
+00:36 – Розгляд структури проєкту веб клієнта 
+02:39 – Коротко про інтернаціоналізацію 
+03:15 – Розгляд навігації та перенаправлення користувача 
+05:01 – Layout та спільні компоненти 
+06:48 – Перегляд розробленого веб застосунку
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 – UML діаграма прецендентів
+
+
+Рисунок Б.2 – UML діаграма компонентів
+
+Рисунок Б.3 – UML діаграма станів
+
+
+Рисунок Б.4 – UML діаграма діяльності
+
+
+ДОДАТОК В
+Приклади програмного коду та запити до ШІ
+В.1 roleRedirect.ts
+1  import { UserRole } from '../types';
+2  
+3  export const getRoleHomePath = (role: UserRole): string => {
+4    switch (role) {
+5      case UserRole.Admin:
+6        return '/admin/dashboard';
+7      case UserRole.Moderator:
+8        return '/moderator/dashboard';
+9      case UserRole.User:
+10       return '/user/aquariums';
+11     default:
+12       return '/no-access';
+13   }
+14 };
+15 
+16 export const canAccess = (role: UserRole, allowedRoles: UserRole[]): boolean => {
+17   return allowedRoles.includes(role);
+18 };
+
+В.2 App.tsx
+1  import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+2  import { Toaster } from "react-hot-toast";
+3  import { AuthProvider } from "./store/AuthContext";
+4  import { UserRole } from "./types";
+5  
+6  import ProtectedRoute from "./components/common/ProtectedRoute";
+7  import DashboardLayout from "./components/layout/DashboardLayout";
+8  import UserLayout from "./components/layout/UserLayout";
+9  
+10 import LoginPage from "./pages/shared/LoginPage";
+11 import RegisterPage from "./pages/shared/RegisterPage";
+12 import NoAccessPage from "./pages/shared/NoAccessPage";
+13 
+14 import AdminDashboard from "./pages/admin/AdminDashboard";
+15 import UsersPage from "./pages/admin/UsersPage";
+16 import InactiveUsersPage from "./pages/admin/InactiveUsersPage";
+17 import ModeratorsPage from "./pages/admin/ModeratorsPage";
+18 import SystemSettingsPage from "./pages/admin/SystemSettingsPage";
+19 import AnalyticsPage from "./pages/admin/AnalyticsPage";
+20 
+21 import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
+22 
+23 import AquariumsPage from "./pages/user/AquariumsPage";
+24 import DevicesPage from "./pages/user/DevicesPage";
+25 import DeviceDetailPage from "./pages/user/DeviceDetailPage";
+26 import NotificationsPage from "./pages/user/NotificationsPage";
+27 
+28 const ADMIN_MOD = [UserRole.Admin, UserRole.Moderator];
+29 const ADMIN_ONLY = [UserRole.Admin];
+30 const MOD_ONLY = [UserRole.Moderator];
+31 const USER_ONLY = [UserRole.User];
+32 
+33 function App() {
+34   return (
+35     <AuthProvider>
+36       <BrowserRouter>
+37         <Toaster
+38           position="top-right"
+39           toastOptions={{
+40             style: {
+41               fontFamily: "DM Sans, sans-serif",
+42               fontSize: "13px",
+43               borderRadius: "12px",
+44               color: "#0B2545",
+45             },
+46           }}
+47         />
+48         <Routes>
+49           <Route path="/login" element={<LoginPage />} />
+50           <Route path="/register" element={<RegisterPage />} />
+51           <Route path="/no-access" element={<NoAccessPage />} />
+52 
+53           <Route
+54             path="/user"
+55             element={
+56               <ProtectedRoute allowedRoles={USER_ONLY}>
+57                 <UserLayout />
+58               </ProtectedRoute>
+59             }
+60           >
+61             <Route index element={<Navigate to="aquariums" replace />} />
+62 
+63             <Route path="aquariums" element={<AquariumsPage />} />
+64             <Route path="aquariums/:aquariumId" element={<DevicesPage />} />
+65             <Route
+66               path="aquariums/:aquariumId/devices/:deviceId"
+67               element={<DeviceDetailPage />}
+68             />
+69             <Route path="notifications" element={<NotificationsPage />} />
+70           </Route>
+71 
+72           <Route
+73             path="/admin"
+74             element={
+75               <ProtectedRoute allowedRoles={ADMIN_ONLY}>
+76                 <DashboardLayout />
+77               </ProtectedRoute>
+78             }
+79           >
+80             <Route index element={<Navigate to="dashboard" replace />} />
+81             <Route path="dashboard" element={<AdminDashboard />} />
+82             <Route path="moderators" element={<ModeratorsPage />} />
+83             <Route path="system-settings" element={<SystemSettingsPage />} />
+84           </Route>
+85 
+86           <Route
+87             path="/admin/users"
+88             element={
+89               <ProtectedRoute allowedRoles={ADMIN_MOD}>
+90                 <DashboardLayout />
+91               </ProtectedRoute>
+92             }
+93           >
+94             <Route index element={<UsersPage />} />
+95           </Route>
+96 
+97           <Route
+98             path="/admin/inactive-users"
+99             element={
+100              <ProtectedRoute allowedRoles={ADMIN_MOD}>
+101                <DashboardLayout />
+102              </ProtectedRoute>
+103            }
+104          >
+105            <Route index element={<InactiveUsersPage />} />
+106          </Route>
+107 
+108          <Route
+109            path="/admin/analytics"
+110            element={
+111              <ProtectedRoute allowedRoles={ADMIN_MOD}>
+112                <DashboardLayout />
+113              </ProtectedRoute>
+114            }
+115          >
+116            <Route index element={<AnalyticsPage />} />
+117          </Route>
+118 
+119          <Route
+120            path="/moderator"
+121            element={
+122              <ProtectedRoute allowedRoles={MOD_ONLY}>
+123                <DashboardLayout />
+124              </ProtectedRoute>
+125            }
+126          >
+127            <Route index element={<Navigate to="dashboard" replace />} />
+128            <Route path="dashboard" element={<ModeratorDashboard />} />
+129          </Route>
+130 
+131          <Route path="/" element={<Navigate to="/login" replace />} />
+132          <Route path="*" element={<Navigate to="/login" replace />} />
+133        </Routes>
+134      </BrowserRouter>
+135    </AuthProvider>
+136  );
+137 }
+138 
+139 export default App;
+
+В.3 Перший запит до ШІ
+«Напиши код для реалізації захищеної маршрутизації та перенаправлення користувачів на основі їхніх ролей (Admin, Moderator, User)…» (з наданим описом структури проєкту)
+
+В.4 Другий запит до ШІ
+«Допоможи реалізувати систему вкладеної навігації (Nested Routing) для розділу користувача, включаючи динамічні шляхи для акваріумів та пристроїв.»
+
+В.5 Третій запит до ШІ
+«Створи універсальний компонент DashboardLayout для адміністративної панелі з використанням Sidebar та Outlet…»
+
+
+
+
+

@@ -1,0 +1,327 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+
+
+
+
+
+
+
+
+ЗВІТ
+з дисципліни «Архітектура програмного забезпечення» 
+до лабораторної роботи №2
+на тему: «Мобільний застосунок»
+
+
+
+
+
+
+
+Виконала:	Перевірив:
+ст. гр. ПЗПІ-23-4	старший викладач каф. ПІ
+Туренко Ю.С.	Сокорчук І.П.
+
+
+
+
+
+
+
+
+
+
+
+ХАРКІВ 2026
+
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень124.040.1Створено розділ «Завдання»211.050.2Створено розділи «Опис виконаної роботи» 313.050.3Додано матеріали у Додатки і написаний висновок
+2 ЗАВДАННЯ
+     Необхідно розробити мобільний програмний застосунок для будь-якої поширеної на сьогодні мобільної платформи. Мобільний застосунок повинен бути частиною системи і повинен взаємодіяти з нею. Для реалізації програмного застосунку можна використовувати технології для реалізації програмного забезпечення для мобільних платформ. Звіт повинен містити опис прийнятих інженерних рішень. У ньому повинна бути показана будова мобільного застосунку та його взаємодія з іншими частинами системи.
+     
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     Для реалізації мобільного клієнта було обрано Flutter із використанням мови програмування Dart. Такий підхід дозволяє створити кросплатформений застосунок із єдиною кодовою базою, сучасним інтерфейсом та підтримкою швидкої розробки. Flutter також забезпечує зручну інтеграцію з REST API та дозволяє легко масштабувати проєкт у майбутньому. Архітектура мобільного застосунку побудована за принципом логічного розділення відповідальностей між шарами інтерфейсу, бізнес-логіки та роботи з API, а також розробляється з дотриманням принципів чистої архітектури та модульного підходу. Структура застосунку поділена на окремі логічні частини: екрани інтерфейсу (screens), компоненти (widgets), сервіси роботи з API (api/services), моделі даних (models) та допоміжні утиліти (utils). Такий підхід забезпечує зрозумілу організацію коду та спрощує подальше розширення системи. Є окремі reusable-компоненти інтерфейсу, що дозволяють повторно використовувати код та дотримаватися принципів SOLID.
+     Мобільний застосунок взаємодіє з backend-системою через HTTP-запити до ASP.NET Core Web API. Для роботи з API використовується бібліотека Dio, а авторизація реалізована через JWT токени з локальним збереженням access та refresh token. Тестування застосунку виконується за допомогою Android Emulator, підключеного до Flutter-проєкту через Visual Studio Code. 
+     У мобільному клієнті реалізовано основні функціональні модулі системи. Було створено сторінки авторизації та реєстрації користувача, головну сторінку зі списком акваріумів, сторінку деталей акваріума та приладів, модулі керування правилами сповіщень (Alarm Rules), запланованими командами (Scheduled Commands), а також сторінку повідомлень (Notifications). Реалізовано створення, редагування, видалення та перегляд відповідних сутностей із використанням діалогових вікон та інтерактивних елементів інтерфейсу. 
+     Головний екран мобільного застосунку, реалізований у файлі home_screen, виступає центральною точкою взаємодії користувача із системою (код В.1). Сторінка забезпечує отримання списку акваріумів через backend API, їх відображення у вигляді окремих інформаційних блоків та навігацію до детальної інформації про вибраний акваріум. Також реалізовано функції створення, редагування та видалення акваріумів із автоматичним оновленням інтерфейсу після змін. У верхній частині екрану розміщені кнопки для переходу до повідомлень та зміни мови інтерфейсу. Для покращення користувацького досвіду застосовано локалізацію текстів, обробку станів завантаження та повідомлення про помилки або відсутність даних.
+     Для покращення зручності використання системи було додано підтримку інтернаціоналізації. Застосунок підтримує українську та англійську мови за допомогою бібліотеки easy_localization. Реалізовано окремий компонент LanguageButton для перемикання мови (код В.2), який використовується на різних сторінках застосунку. Це дозволяє динамічно змінювати мову інтерфейсу без перезапуску застосунку.
+     На UML діаграмі прецедентів (Use Case Diagram) показано основні сценарії взаємодії користувача із системою (рис. Б.1). Користувач може виконувати авторизацію, працювати з акваріумами та приладами, переглядати сенсорні дані, створювати правила автоматичного реагування, керувати командами та переглядати повідомлення системи. Також передбачено зміну мови інтерфейсу застосунку.
+     На UML діаграмі компонентів (Component Diagram) показано основні складові мобільного застосунку та їх взаємодію між собою (рис. Б.2). Інтерфейс користувача складається зі сторінок (UI Screens) та окремих віджетів (Widgets Components), які взаємодіють із API-шаром. API-компоненти відповідають за роботу з конкретними модулями backend-системи: авторизацією, акваріумами, приладами, правилами сповіщень, командами та повідомленнями. Окремо виділено модуль локалізації та компонент збереження токенів авторизації.
+     Для забезпечення функціональності системи було реалізовано набір основних сторінок мобільного застосунку. До них належать сторінки реєстрації та входу в систему, головна сторінка зі списком акваріумів, сторінка деталей акваріума та приладів, сторінки правил сповіщень (Alarm Rules), команд керування (Commands) та повідомлень користувача (Notifications). Кожен модуль підтримує створення, редагування, видалення та перегляд відповідних сутностей.
+     На UML діаграмі діяльності (Activity Diagram) показано процес авторизації користувача (рис. Б.3). Після запуску застосунку система перевіряє наявність токена доступу. Якщо токен існує, користувач автоматично переходить на головну сторінку. Якщо токен відсутній, відкривається сторінка входу, де після успішної перевірки облікових даних виконується збереження токена та перехід до основного інтерфейсу застосунку.
+     Діаграма взаємодії (Interaction Overview Diagram) демонструє загальний сценарій роботи мобільного застосунку (рис. Б.4). Після запуску система перевіряє наявність авторизації користувача та відкриває відповідний екран. Далі застосунок взаємодіє з backend API для отримання списку акваріумів, приладів і сенсорних даних. Користувач може виконувати операції керування пристроями, правилами та командами, після чого інтерфейс оновлюється відповідно до отриманих даних.
+     У ході виконання роботи було використано інструмент штучного інтелекту. Назва інструменту та версія: ChatGPT 5.3.
+     Перший запит до ШІ був зроблений для реалізації авторизації та роботи з JWT-токенами у мобільному застосунку Flutter (запит В.3). Мета: створення логіки взаємодії з backend API, збереження access/refresh token та автоматичного переходу між екранами після успішної авторизації. Внесок автора: отриманий код був перевірений, адаптований під структуру проєкту та доповнений власною логікою обробки помилок і навігації.
+     Під час розробки сторінок був запит до ШІ для правильної реалізації сторінок керування приладами, правилами та запланованими командами (запит В.4). Мета: створення структурованих екранів із CRUD-операціями, інтеграцією з backend API та відображенням даних у вигляді окремих інформаційних блоків. Внесок автора: отриманий результат був доопрацьований, перевірений через тестування API та змінений відповідно до бізнес-логіки системи та гарного UI відображення.
+     Також був зроблений запит до ШІ для реалізації інтернаціоналізації мобільного застосунку українською та англійською мовами (запит В.5). Мета: налаштування інтернаціоналізації за допомогою пакету easy_localization, створення системи перекладів і кнопки перемикання мов у спільному компоненті інтерфейсу. Внесок автора: отримане рішення було перевірене на працездатність та змінене відповідно до структури інтерфейсів і стилю застосунку.
+     
+4 ВИСНОВОК
+     У результаті виконання лабораторної роботи було розроблено мобільний застосунок орієнтований на швидкий доступ до основних функцій та інформації. Він надає зручний перегляд показників, отримання сповіщень та можливість швидкого керування обладнанням.
+     
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/bb_7mhy-koQ 
+Хронологічний опис відеозапису:
+00:00 – Вступ
+00:45 – Розгляд структури проєкту мобільного клієнта 
+03:51 – Розгляд коду main, інтернаціоналізація 
+05:57 – Розгляд реалізації головної сторінки 
+08:24 – Перегляд розробленого мобільного клієнта
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 – UML діаграма прецендентів
+
+Рисунок Б.2 – UML діаграма компонентів
+
+
+Рисунок Б.3 – UML діаграма діяльності
+
+
+Рисунок Б.4 – UML діаграма взаємодії
+
+
+ДОДАТОК В
+Приклади програмного коду та запити до ШІ
+В.1 home_sreen.dart
+1   import 'package:flutter/material.dart';
+2   import '../../../../core/network/api_client.dart';
+3   import '../../../../core/utils/token_storage.dart';
+4   import '../../../aquarium/data/datasources/aquarium_api.dart';
+5   import '../../../aquarium/data/models/aquarium_model.dart';
+6   import '../../../aquarium/presentation/screens/aquarium_details_screen.dart';
+7   import '../../../aquarium/presentation/widgets/aquarium_card.dart';
+8   import '../../../../shared/widgets/language_button.dart';
+9   import '../../../../shared/widgets/notification_button.dart';
+10  import 'package:easy_localization/easy_localization.dart';
+11  
+12  class HomeScreen extends StatefulWidget {
+13    const HomeScreen({super.key});
+14  
+15    @override
+16    State<HomeScreen> createState() => _HomeScreenState();
+17  }
+18  
+19  class _HomeScreenState extends State<HomeScreen> {
+20    List<Aquarium> aquariums = [];
+21    bool isLoading = true;
+22  
+23    late AquariumApi api;
+24  
+25    @override
+26    void initState() {
+27      super.initState();
+28      init();
+29    }
+30  
+31    Future<void> init() async {
+32      final token = await TokenStorage().getAccessToken();
+33      final client = ApiClient(token).dio;
+34  
+35      api = AquariumApi(client);
+36  
+37      await loadAquariums();
+38    }
+39  
+40    Future<void> loadAquariums() async {
+41      setState(() => isLoading = true);
+42  
+43      try {
+44        aquariums = await api.getAll();
+45      } catch (e) {
+46        debugPrint(e.toString());
+47      }
+48  
+49      setState(() => isLoading = false);
+50    }
+51  
+52    void createAquarium() async {
+53      final nameController = TextEditingController();
+54      final locationController = TextEditingController();
+55  
+56      await showDialog(
+57        context: context,
+58        builder: (_) => AlertDialog(
+59          title: Text("create_aquarium".tr()),
+60          content: Column(
+61            mainAxisSize: MainAxisSize.min,
+62            children: [
+63              TextField(
+64                controller: nameController,
+65                decoration: InputDecoration(labelText: "aquarium_name".tr()),
+66              ),
+67              TextField(
+68                controller: locationController,
+69                decoration: InputDecoration(labelText: "aquarium_location".tr()),
+70              ),
+71            ],
+72          ),
+73          actions: [
+74            TextButton(
+75              onPressed: () => Navigator.pop(context),
+76              child: Text("action_cancel".tr()),
+77            ),
+78            ElevatedButton(
+79              onPressed: () async {
+80                await api.create(nameController.text, locationController.text);
+81                if (!mounted) return;
+82                Navigator.pop(context);
+83                loadAquariums();
+84              },
+85              child: Text("action_create".tr()),
+86            ),
+87          ],
+88        ),
+89      );
+90    }
+91  
+92    void editAquarium(Aquarium a) async {
+93      final nameController = TextEditingController(text: a.name);
+94      final locationController = TextEditingController(text: a.location);
+95  
+96      await showDialog(
+97        context: context,
+98        builder: (_) => AlertDialog(
+99          title: Text("aquarium_edit_title".tr()),
+100         content: Column(
+101           mainAxisSize: MainAxisSize.min,
+102           children: [
+103             TextField(controller: nameController),
+104             TextField(controller: locationController),
+105           ],
+106         ),
+107         actions: [
+108           TextButton(
+109             onPressed: () => Navigator.pop(context),
+110             child: Text("action_cancel".tr()),
+111           ),
+112           ElevatedButton(
+113             onPressed: () async {
+114               await api.update(
+115                 a.id,
+116                 nameController.text,
+117                 locationController.text,
+118               );
+119               if (!mounted) return;
+120               Navigator.pop(context);
+121               loadAquariums();
+122             },
+123             child: Text("action_save".tr()),
+124           ),
+125         ],
+126       ),
+127     );
+128   }
+129 
+130   void deleteAquarium(int id) async {
+131     await showDialog(
+132       context: context,
+133       builder: (_) => AlertDialog(
+134         title: Text("delete_confirm".tr()),
+135         actions: [
+136           TextButton(
+137             onPressed: () => Navigator.pop(context),
+138             child: Text("action_cancel".tr()),
+139           ),
+140           ElevatedButton(
+141             onPressed: () async {
+142               await api.delete(id);
+143               if (!mounted) return;
+144               Navigator.pop(context);
+145               loadAquariums();
+146             },
+147             child: Text("action_delete".tr()),
+148           ),
+149         ],
+150       ),
+151     );
+152   }
+153 
+154   @override
+155   Widget build(BuildContext context) {
+156     return Scaffold(
+157       appBar: AppBar(
+158         title: const Text("CleanArium"),
+159         actions: [
+160           IconButton(icon: const Icon(Icons.support_agent), onPressed: () {}),
+161           NotificationButton(),
+162           LanguageButton(),
+163         ],
+164       ),
+165       floatingActionButton: FloatingActionButton(
+166         onPressed: createAquarium,
+167         child: const Icon(Icons.add),
+168       ),
+169       body: isLoading
+170           ? const Center(child: CircularProgressIndicator())
+171           : aquariums.isEmpty
+172           ? Center(child: Text("aquarium_create_first".tr()))
+173           : ListView.builder(
+174               itemCount: aquariums.length,
+175               itemBuilder: (_, i) {
+176                 final a = aquariums[i];
+177 
+178                 return AquariumCard(
+179                   aquarium: a,
+180                   onTap: () {
+181                     Navigator.push(
+182                       context,
+183                       MaterialPageRoute(
+184                         builder: (_) => AquariumDetailsScreen(
+185                           aquariumId: a.id,
+186                           name: a.name,
+187                         ),
+188                       ),
+189                     );
+190                   },
+191                   onEdit: () => editAquarium(a),
+192                   onDelete: () => deleteAquarium(a.id),
+193                 );
+194               },
+195             ),
+196     );
+197   }
+198 }
+
+В.2 language_button.dart
+1  import 'package:flutter/material.dart';
+2  import 'package:easy_localization/easy_localization.dart';
+3  
+4  class LanguageButton extends StatelessWidget {
+5    const LanguageButton({super.key});
+6  
+7    @override
+8    Widget build(BuildContext context) {
+9      return IconButton(
+10       icon: const Icon(Icons.language),
+11       onPressed: () async {
+12         if (context.locale.languageCode == 'en') {
+13           await context.setLocale(const Locale('uk'));
+14         } else {
+15           await context.setLocale(const Locale('en'));
+16         }
+17       },
+18     );
+19   }
+20 }
+
+В.3 Перший запит до ШІ
+«Напиши код для реалізації авторизації та роботи з JWT-токенами…» (з наданим відповідним фрагментами коду по авторизації на бекенд частині)
+
+В.4 Другий запит до ШІ
+«Напиши компоненти для реалізації: сторінок керування приладами, правилами та командами…» (з наданим відповідними апі та описом структури проєкту та елементів інтерфейсу)
+В.5 Третій запит до ШІ
+«Напиши як реалізувати інтернаціоналізацію в Flutter проекті українською та англійською мовами»
+
+
+
+
+
+
