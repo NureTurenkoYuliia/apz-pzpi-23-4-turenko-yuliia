@@ -1,0 +1,11 @@
+﻿namespace Domain.Models;
+
+public class SystemSettings
+{
+    public long Id { get; set; } = 1;
+
+    public int MaxAquariumsPerUser { get; set; }
+    public int MaxDevicesPerAquarium { get; set; }
+    public int MaxAlarmRulesPerDevice { get; set; }
+    public int MaxScheduledCommandsPerDevice { get; set; }
+}
