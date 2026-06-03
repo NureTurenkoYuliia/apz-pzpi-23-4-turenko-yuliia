@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cleanarium-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cleanarium-api
+  template:
+    metadata:
+      labels:
+        app: cleanarium-api
+    spec:
+      serviceAccountName: cleanarium-admin
+      
+      containers:
+      - name: cleanarium-api
+        image: cleanarium-api
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 8080
+
+        env:
+          - name: ConnectionStrings__DefaultConnection
+            value: "Server=cleanarium-sql-service;Database=CleanAriumDb;User Id=sa;Password=CleanArium123!;TrustServerCertificate=True;"

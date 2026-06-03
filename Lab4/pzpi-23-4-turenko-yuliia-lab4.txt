@@ -1,0 +1,339 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+
+
+
+
+
+
+
+
+ЗВІТ
+з дисципліни «Архітектура програмного забезпечення» 
+до лабораторної роботи №4
+на тему: «Масштабування бекенда»
+
+
+
+
+
+
+
+Виконала:	Перевірив:
+ст. гр. ПЗПІ-23-4	старший викладач каф. ПІ
+Туренко Ю.С.	Сокорчук І.П.
+
+
+
+
+
+
+
+
+
+
+
+ХАРКІВ 2026
+
+1 ІСТОРІЯ ЗМІН
+
+№ДатаВерсія звітуОпис змін та виправлень130.050.1Створено розділ «Завдання»202.060.2Створено розділ «Опис виконаної роботи» і написаний висновок303.060.3Додано матеріали у Додатки 
+2 ЗАВДАННЯ
+     Необхідно показати як можна масштабувати бекенд системи для роботи із великим навантаженням. Для цього, можна на вибір: 
+* масштабувати сервер горизонтально – багато  копій сервера виконують однакові функції для різних користувачів; 
+* масштабувати сервер вертикально – різні мікросервіси виконують різні функції і масштабуються окремо одне від одного.
+     
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     На першому етапі було виконано контейнеризацію інформаційної системи моніторингу акваріумів за допомогою технології Docker. Для кожного основного компонента системи було створено окремий контейнер. Для серверної частини та веб-клієнта були створені Dockerfile, які забезпечують автоматичне складання та запуск застосунків у контейнерному середовищі. База даних SQL Server запускалася в окремому контейнері з використанням офіційного образу Microsoft. Після завершення контейнеризації всі компоненти системи успішно працювали у Docker-середовищі та забезпечували повний цикл роботи застосунку. 
+     На другому етапі було виконано оркестрацію контейнерів за допомогою Kubernetes. Для кожного компонента були створені відповідні Kubernetes-ресурси:
+* Deployment для серверної частини;
+* Deployment для бази даних;
+* Deployment для фронтенд частини;
+* Service для серверної частини;
+* Service для серверної частини;
+* Service для фронтенд частини.
+     У системі використовується горизонтальна стратегія масштабування (Horizontal Scaling), яка передбачає збільшення або зменшення кількості екземплярів застосунку (Pods) без зміни програмного коду. Масштабування виконується на рівні Kubernetes Deployment шляхом зміни кількості реплік (рис. Б.1). При збільшенні навантаження створюються додаткові екземпляри сервісу, які обробляють запити паралельно. При зменшенні навантаження надлишкові екземпляри можуть бути видалені для економії обчислювальних ресурсів. Таким чином, Kubernetes автоматично розподіляє навантаження між створеними екземплярами та забезпечує їхню працездатність.
+     У рамках роботи реалізовано можливість керування кількістю реплік через адміністративну панель, що дозволяє оперативно адаптувати систему до поточного навантаження. У шарі Infrastructure створено сервіс роботи з Kubernetes (код В.1). Для взаємодії використовується пакет KubernetesClient. Сервіс інкапсулює всю логіку роботи з Kubernetes API:
+* отримання Deployment;
+* масштабування;
+* перезапуск;
+* отримання Pod;
+* отримання логів.
+     Також реалізовано модуль автоматичної генерації Kubernetes-конфігурацій, щоб користувач міг задавати параметри контейнеризованого застосунку через веб-інтерфейс, після чого система автоматично формує YAML-конфігурації Deployment, Service та Horizontal Pod Autoscaler.  Автоматизація генерації конфігурацій зменшує кількість ручних операцій та ризик помилок при адмініструванні контейнеризованої інфраструктури.
+     У шарі API реалізовано контролер адміністратора, який надає REST API для фронтенду. Доступ до функцій керування кластером обмежено адміністраторами системи. Для контролерів використовується авторизація за ролю Admin. Таким чином операції масштабування та керування інфраструктурою можуть виконувати лише користувачі з адміністративними правами. 
+     Отже, адміністратор має власну панель (рис. Б.2), де може отримати список усіх Deployment у кластері. Для кожного Deployment відображаються:
+* назва Deployment;
+* namespace;
+* кількість бажаних реплік;
+* кількість активних реплік;
+* кількість готових реплік;
+* використовуваний Docker-образ.
+     Це дозволяє контролювати поточний стан розгорнутих сервісів.
+     Реалізовано модуль автоматичної генерації Kubernetes Deployment-конфігурації (код В.2). Адміністратор задає основні параметри застосунку через веб-інтерфейс, після чого система автоматично формує готовий YAML-файл для розгортання сервісу в Kubernetes-кластері (рис. Б.3). Це зменшує кількість ручних дій та спрощує процес адміністрування інфраструктури. Згенеровані конфігурації можуть бути використані для швидкого розгортання та масштабування сервісів у Kubernetes-кластері.
+     Загалом, для забезпечення масштабованості використано такі технології та механізми:
+* Docker-контейнеризація застосунку, що забезпечує однакове середовище виконання незалежно від кількості екземплярів;
+* Kubernetes Deployment для автоматизованого керування життєвим циклом контейнерів;
+* Kubernetes Service для балансування мережевого трафіку між кількома репліками застосунку;
+* Kubernetes ReplicaSet, який автоматично підтримує необхідну кількість 
+* автоматична генерація Kubernetes-конфігурацій, що спрощує процес розгортання нових сервісів та знижує ризик конфігураційних помилок.
+     Під час роботи системи найбільш вузькими місцями є:
+* процесорні ресурси (CPU);
+* оперативна пам'ять (RAM);
+* база даних SQL Server;
+* мережеві ресурси при великій кількості одночасних запитів.
+     Для аналізу стану системи адміністратор може:
+* переглядати список активних Deployment та Pods;
+* переглядати журнали роботи (Logs) контейнерів;
+* контролювати поточну кількість реплік;
+* змінювати кількість реплік для перевірки реакції системи на навантаження;
+* генерувати та налаштовувати параметри автоматичного масштабування (HPA).
+
+     У ході виконання роботи було використано інструмент штучного інтелекту. Назва інструменту та версія: ChatGPT 5.3.
+     Мета: оптимізація процесу розробки адмін-панелі, прискорення реалізації інфраструктурних компонентів системи, автоматизація підготовки конфігурацій та забезпечення масштабованості програмного забезпечення.
+     Перший запит до ШІ був зроблений для проєктування контейнерної архітектури застосунку на основі Docker (запит В.3). Мета: визначення структури Docker-образів для фронтенду, бекенду та бази даних, а також організація взаємодії між контейнерами. Внесок автора: запропоноване рішення було перевірене, адаптоване до структури проєкту та доповнене власними налаштуваннями мережі й зберігання даних.
+     Під час розробки Kubernetes-інфраструктури був зроблений запит до ШІ для створення Deployment та Service конфігурацій (запит В.4). Мета: автоматизація розгортання компонентів системи в Kubernetes-кластері та забезпечення їх взаємодії. Внесок автора: отримані конфігурації були перевірені, модифіковані відповідно до архітектури системи та протестовані в локальному кластері.
+     Також був зроблений запит до ШІ для реалізації механізму масштабування застосунку через Kubernetes API (запит В.5). Мета: створення коректного функціоналу зміни кількості реплік сервісів без необхідності використання командного рядка Kubernetes. Внесок автора: запропонований підхід був інтегрований у багатошарову архітектуру проєкту та застосований для створення відповідних компонентів для веб-сторінки.
+     
+4 ВИСНОВОК
+     У результаті виконання лабораторної роботи було створено власну веб-панель керування Kubernetes-кластером. Реалізоване рішення дозволяє переглядати Deployment, контролювати стан Pod, масштабувати сервіси, виконувати перезапуск контейнерів, переглядати журнали роботи застосунків.
+     
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/iqzGKimd20A 
+Хронологічний опис відеозапису:
+00:00 – Вступ
+00:16 – Контейнеризація з Docker 
+01:39 – Оркестрація з Kubernetes 
+03:46 – Горизонтальне масштабування 
+05:57 – Функціонал взаємодії з Kubernetes-кластером 
+09:16 – Демонстрація адмін панелі 
+11:18 – Аналіз навантаження та висновок
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 – Результат виконання команди зміни кількості реплік
+
+
+Рисунок Б.2 – Kubernetes панель адміна
+
+
+
+Рисунок Б.3 – Автоматично згенеровані конфігурації за значеннями адміна
+
+ДОДАТОК В
+Приклади програмного коду та запити до ШІ
+В.1 KubernetesService.cs
+1 using Application.Abstractions;
+2 using Application.DTOs.Kubernetes;
+3 using k8s;
+4 using k8s.Models;
+5 
+6 namespace Infrastructure.Services;
+7 
+8 public class KubernetesService : IKubernetesService
+9 {
+10     private readonly IKubernetes _client;
+11     private const string Namespace = "default";
+12 
+13     public KubernetesService()
+14     {
+15         var config = KubernetesClientConfiguration.InClusterConfig();
+16 
+17         _client = new Kubernetes(config);
+18     }
+19 
+20     public async Task<List<DeploymentDto>> GetDeploymentsAsync()
+21     {
+22         var deployments = await _client.AppsV1.ListNamespacedDeploymentAsync(Namespace);
+23 
+24         return deployments.Items.Select(d => new DeploymentDto
+25         {
+26             Name = d.Metadata.Name!,
+27             Replicas = d.Spec.Replicas ?? 0,
+28             ReadyReplicas = d.Status.ReadyReplicas ?? 0,
+29             AvailableReplicas = d.Status.AvailableReplicas ?? 0
+30         }).ToList();
+31     }
+32 
+33     public async Task ScaleDeploymentAsync(string deploymentName, int replicas)
+34     {
+35         var deployment = await _client.AppsV1.ReadNamespacedDeploymentAsync(deploymentName, Namespace);
+36 
+37         deployment.Spec.Replicas = replicas;
+38 
+39         await _client.AppsV1.ReplaceNamespacedDeploymentAsync(
+40             deployment,
+41             deploymentName,
+42             Namespace);
+43     }
+44 
+45     public async Task RestartDeploymentAsync(string deploymentName)
+46     {
+47         var deployment = await _client.AppsV1.ReadNamespacedDeploymentAsync(deploymentName, Namespace);
+48 
+49         deployment.Spec.Template.Metadata ??= new V1ObjectMeta();
+50 
+51         deployment.Spec.Template.Metadata.Annotations ??= new Dictionary<string, string>();
+52 
+53         deployment.Spec.Template.Metadata.Annotations[
+54             "kubectl.kubernetes.io/restartedAt"] =
+55             DateTime.UtcNow.ToString("O");
+56 
+57         await _client.AppsV1.ReplaceNamespacedDeploymentAsync(
+58             deployment,
+59             deploymentName,
+60             Namespace);
+61     }
+62 
+63     public async Task<List<PodDto>> GetPodsAsync()
+64     {
+65         var pods = await _client.CoreV1.ListNamespacedPodAsync("default");
+66 
+67         return pods.Items.Select(p => new PodDto
+68         {
+69             Name = p.Metadata.Name,
+70             Status = p.Status.Phase,
+71             Node = p.Spec.NodeName,
+72             PodIp = p.Status.PodIP
+73         }).ToList();
+74     }
+75 
+76     public async Task<PodLogsDto> GetLogsAsync(string deploymentName)
+77     {
+78         var deployment = await _client.AppsV1.ReadNamespacedDeploymentAsync(deploymentName, Namespace);
+79         var labels = deployment.Spec.Selector.MatchLabels;
+80         var selector = string.Join(",", labels.Select(x => $"{x.Key}={x.Value}"));
+81         var pods = await _client.CoreV1.ListNamespacedPodAsync(Namespace, labelSelector: selector);
+82         var pod = pods.Items.First();
+83         var logs = await _client.CoreV1.ReadNamespacedPodLogAsync(
+84             pod.Metadata.Name,
+85             Namespace,
+86             tailLines: 100);
+87 
+88         string logsText = string.Empty;
+89         using (var reader = new StreamReader(logs))
+90         {
+91             logsText = await reader.ReadToEndAsync();
+92         }
+93 
+94         return new PodLogsDto
+95         {
+96             PodName = pod.Metadata.Name!,
+97             Logs = logsText
+98         };
+99     }
+100 }
+
+В.2 KubernetesConfigGenerator.cs
+1 using Application.Abstractions;
+2 using Application.DTOs.Kubernetes;
+3 
+4 namespace Infrastructure.Services;
+5 
+6 public class KubernetesConfigGenerator : IKubernetesConfigGenerator
+7 {
+8     public KubernetesConfigResponse Generate(KubernetesConfigRequest request)
+9     {
+10         var deployment = GenerateDeployment(request);
+11         var service = GenerateService(request);
+12         var hpa = GenerateHpa(request);
+13 
+14         return new KubernetesConfigResponse
+15         {
+16             DeploymentYaml = deployment,
+17             ServiceYaml = service,
+18             HpaYaml = hpa
+19         };
+20     }
+21 
+22     private string GenerateDeployment(KubernetesConfigRequest r)
+23     {
+24         return $"""
+25 apiVersion: apps/v1
+26 kind: Deployment
+27 metadata:
+28   name: {r.AppName}
+29 spec:
+30   replicas: {r.Replicas}
+31   selector:
+32     matchLabels:
+33       app: {r.AppName}
+34   template:
+35     metadata:
+36       labels:
+37         app: {r.AppName}
+38     spec:
+39       containers:
+40       - name: {r.AppName}
+41         image: {r.Image}
+42         ports:
+43         - containerPort: {r.ContainerPort}
+44         resources:
+45           requests:
+46             cpu: {r.CpuRequest}
+47             memory: {r.MemoryRequest}
+48 """;
+49     }
+50 
+51     private string GenerateService(KubernetesConfigRequest r)
+52     {
+53         return $"""
+54 apiVersion: v1
+55 kind: Service
+56 metadata:
+57   name: {r.AppName}-service
+58 spec:
+59   selector:
+60     app: {r.AppName}
+61   ports:
+62   - protocol: TCP
+63     port: 80
+64     targetPort: {r.ContainerPort}
+65   type: ClusterIP
+66 """;
+67     }
+68 
+69     private string GenerateHpa(
+70         KubernetesConfigRequest r)
+71     {
+72         return $"""
+73 apiVersion: autoscaling/v2
+74 kind: HorizontalPodAutoscaler
+75 metadata:
+76   name: {r.AppName}-hpa
+77 spec:
+78   scaleTargetRef:
+79     apiVersion: apps/v1
+80     kind: Deployment
+81     name: {r.AppName}
+82   minReplicas: {r.MinReplicas}
+83   maxReplicas: {r.MaxReplicas}
+84   metrics:
+85   - type: Resource
+86     resource:
+87       name: cpu
+88       target:
+89         type: Utilization
+90         averageUtilization: 70
+91 """;
+92     }
+93 }
+
+В.3 Перший запит до ШІ
+«Напиши покроковий план контейнеризації системи за допомогою Docker з урахуванням архітектури…» (з описом архітектури проєкту)
+
+В.4 Другий запит до ШІ
+«Напиши Kubernetes-конфігурації для розгортання ASP.NET Core API та React у локальному Kubernetes-кластері, включаючи deployment і service.»
+
+В.5 Третій запит до ШІ
+«Напиши реалізацію функціоналу горизонтального масштабування сервісів через Kubernetes API для адміністративної панелі, яка дозволяє змінювати кількість реплік Deployment без використання kubectl»
+
+
+
+
+

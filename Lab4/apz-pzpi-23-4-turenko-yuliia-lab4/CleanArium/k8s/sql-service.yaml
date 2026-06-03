@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: cleanarium-sql-service
+
+spec:
+  selector:
+    app: cleanarium-sql
+
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433
+
+  type: ClusterIP

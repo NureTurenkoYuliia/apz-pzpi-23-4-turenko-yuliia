@@ -1,0 +1,6 @@
+﻿namespace CleanArium.Contracts.Auth;
+
+public class LogoutRequest
+{
+    public string RefreshToken { get; set; } = default!;
+}

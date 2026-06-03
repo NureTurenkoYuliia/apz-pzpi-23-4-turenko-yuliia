@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: #EEF4ED;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* React Datepicker overrides */
+.react-datepicker {
+  font-family: 'DM Sans', sans-serif !important;
+  border: 1px solid #8DA9C4 !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(11, 37, 69, 0.12) !important;
+}
+
+.react-datepicker__header {
+  background-color: #0B2545 !important;
+  border-bottom: none !important;
+  padding: 12px 0 8px !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: #EEF4ED !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  background-color: #0B2545 !important;
+  border-radius: 6px !important;
+}
+
+.react-datepicker__day:hover {
+  border-radius: 6px !important;
+  background-color: #8DA9C4 !important;
+}

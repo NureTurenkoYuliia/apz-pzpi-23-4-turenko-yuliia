@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cleanarium-api-service
+spec:
+  selector:
+    app: cleanarium-api
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: NodePort
